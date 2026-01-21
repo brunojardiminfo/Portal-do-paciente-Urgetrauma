@@ -1,0 +1,9 @@
+{
+  "name": "Urgetrauma Digital Portal",
+  "short_name": "Urgetrauma",
+  "description": "Portal completo de gestão e reabilitação Urgetrauma. Agendamentos, telemedicina e acompanhamento fisioterapêutico especializado.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "author": "Bruno Jardim"
+}

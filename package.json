@@ -1,0 +1,19 @@
+
+{
+  "name": "urgetrauma-digital-portal",
+  "version": "1.0.0",
+  "description": "Portal Urgetrauma Digital - Saúde e Movimento",
+  "scripts": {
+    "login": "firebase login",
+    "deploy": "firebase deploy --only hosting",
+    "init": "firebase init hosting"
+  },
+  "keywords": [
+    "orthopedics",
+    "physiotherapy",
+    "react",
+    "gemini-ai"
+  ],
+  "author": "Bruno Jardim",
+  "license": "MIT"
+}
