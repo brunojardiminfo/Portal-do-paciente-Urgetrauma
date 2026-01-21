@@ -14,7 +14,29 @@ import RequestCenter from './components/RequestCenter';
 import PatientProfile from './components/PatientProfile';
 import { Menu, X, ArrowLeft, AlertCircle } from 'lucide-react';
 
-// Pagina 404 Otimizada
+// Logotipo com Fallback Inteligente
+const BrandLogo = ({ className = "h-12" }: { className?: string }) => {
+  const [error, setError] = useState(false);
+  
+  if (error) {
+    return (
+      <div className="text-2xl font-black text-slate-900 tracking-tighter">
+        URGE<span className="text-blue-600">TRAUMA</span>
+      </div>
+    );
+  }
+
+  return (
+    <img 
+      src="logo-clinica.png" 
+      alt="Urgetrauma" 
+      className={`${className} w-auto object-contain cursor-pointer`}
+      onClick={() => window.location.hash = '/'}
+      onError={() => setError(true)}
+    />
+  );
+};
+
 const NotFound = () => (
   <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 animate-in fade-in zoom-in duration-500">
     <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 mb-6">
@@ -47,7 +69,7 @@ const Sidebar = ({ role, isOpen, toggle, onLogout }: { role: UserRole, isOpen: b
 
   const sidebarClasses = `
     fixed inset-y-0 left-0 z-50 w-64 bg-white border-r transform transition-transform duration-300 ease-in-out
-    lg:relative lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'} shadow-2xl lg:shadow-none
+    lg:relative lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'} shadow-2xl lg:shadow-none flex flex-col
   `;
 
   return (
@@ -59,13 +81,7 @@ const Sidebar = ({ role, isOpen, toggle, onLogout }: { role: UserRole, isOpen: b
       <div className={sidebarClasses}>
         <div className="p-6 border-b flex items-center justify-between">
           <div className="flex items-center justify-center w-full">
-            <img 
-              src="logo-clinica.png" 
-              alt="Urgetrauma" 
-              className="h-12 w-auto object-contain cursor-pointer"
-              onClick={() => window.location.hash = '/'}
-              onError={(e) => (e.currentTarget.style.display = 'none')}
-            />
+            <BrandLogo />
           </div>
           <button onClick={toggle} className="lg:hidden text-slate-400 p-1 hover:bg-slate-50 rounded-lg absolute right-4">
             <X size={20} />
@@ -124,7 +140,9 @@ const Header = ({ role, toggleSidebar }: { role: UserRole, toggleSidebar: () => 
           <span className="font-bold text-slate-800 text-sm hidden sm:inline">
             {role === UserRole.PATIENT ? 'Painel do Paciente' : 'Área de Gestão'}
           </span>
-          <img src="logo-clinica.png" alt="Urgetrauma" className="h-6 w-auto lg:hidden" onError={(e) => (e.currentTarget.style.display = 'none')} />
+          <div className="lg:hidden scale-75 origin-left">
+            <BrandLogo className="h-8" />
+          </div>
         </div>
       </div>
       
@@ -134,13 +152,13 @@ const Header = ({ role, toggleSidebar }: { role: UserRole, toggleSidebar: () => 
             {role === UserRole.PATIENT ? `${MOCK_PATIENT.firstName} ${MOCK_PATIENT.lastName}` : 'Fis. Marcos Santos'}
           </p>
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
-            {role === UserRole.PATIENT ? `Matrícula: ${MOCK_PATIENT.id}` : 'Profissional'}
+            {role === UserRole.PATIENT ? `ID: ${MOCK_PATIENT.id}` : 'Fisioterapeuta Sênior'}
           </p>
         </div>
         <div className="relative">
           <img 
             src={role === UserRole.PATIENT ? `https://picsum.photos/seed/${MOCK_PATIENT.firstName}/100/100` : 'https://picsum.photos/seed/physio/100/100'} 
-            className="w-9 h-9 lg:w-10 lg:h-10 rounded-2xl border-2 border-white shadow-sm object-cover"
+            className="w-9 h-9 lg:w-10 lg:h-10 rounded-2xl border-2 border-white shadow-sm object-cover bg-slate-100"
             alt="User avatar"
           />
           <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
@@ -162,6 +180,7 @@ const App: React.FC = () => {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setIsSidebarOpen(false);
   };
 
   if (!isAuthenticated) {
@@ -170,11 +189,11 @@ const App: React.FC = () => {
 
   return (
     <HashRouter>
-      <div className="flex min-h-screen bg-slate-50">
+      <div className="flex min-h-screen bg-slate-50 overflow-hidden">
         <Sidebar role={role} isOpen={isSidebarOpen} toggle={() => setIsSidebarOpen(!isSidebarOpen)} onLogout={handleLogout} />
-        <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+        <div className="flex-1 flex flex-col min-w-0 overflow-y-auto max-h-screen relative">
           <Header role={role} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-          <main className="p-4 lg:p-8 max-w-7xl mx-auto w-full">
+          <main className="p-4 lg:p-8 max-w-7xl mx-auto w-full flex-1">
             <Routes>
               {/* Rotas de Paciente */}
               <Route path="/patient" element={<PatientDashboard />} />
@@ -196,7 +215,7 @@ const App: React.FC = () => {
           
           <footer className="mt-auto p-6 text-center border-t border-slate-100 bg-white/50">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-              © 2024 Urgetrauma Digital • Saúde e Movimento • Desenvolvido por Bruno Jardim
+              © 2024 Urgetrauma Digital • Porto Alegre/RS • Desenvolvido por Bruno Jardim
             </p>
           </footer>
         </div>
